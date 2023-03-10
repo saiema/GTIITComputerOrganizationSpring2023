@@ -85,7 +85,7 @@ _ge:
   push %rbp
   mov %rsp, %rbp
   cmp %rdi, %rsi # B - A
-  setge %rax
+  setge %al
   leave
   ret
   
