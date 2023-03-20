@@ -1,0 +1,14 @@
+/*
+  Given an unsigned number value, calculate the next even number.
+  For example, for 3, the next even number is 4; for 6 the next
+  even number is 8.
+*/
+
+# C-like code
+#TODO: complete
+
+# Goto-like code
+#TODO: complete
+
+# Assembly
+#TODO: complete
