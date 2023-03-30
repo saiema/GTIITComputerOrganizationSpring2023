@@ -24,16 +24,16 @@ main:
     idx = 0
     size = 8
     while (!found && size - idx >= 0)
-      nextChar(idx);
       found = currentChar() == char
+      nextChar(idx);
     return found
   
     pseudo GOTO-like code
     goto test
     
     loop:
-      nextChar(idx);
       found = currentChar() == char
+      nextChar(idx);
     
     test:
       if (!found && size - idx >= 0)
@@ -44,27 +44,27 @@ main:
   */
   push %rbp
   mov %rsp, %rbp
-  mov string, %rdi
+  mov string, %rdi      
   mov char, %sil
   mov size, %dl
-  mov $0, %cl
-  mov $0, %al
+  mov $0, %cl       #We will use this register as a counter, and we will increment in amounts of 8 (one character at a time)
+  mov $0, %al       #Since we want to return the value in found, we can use al to store it
   jmp test
   
 loop:
-  shr %cl, %rdi
-  mov %dil, %r10b
-  xor %sil, %r10b
-  sete %al
-  add $8, %cl
+  mov %dil, %r10b   #We will move %dil (where our character to search is) into another register to be able to do a xor without affecting our character-to-look
+  xor %sil, %r10b   #If the current character (at %dil) is the same as the one we are searching for then xor will give a 0
+  sete %al          #We will update %al (our found variable) with the Zero Flag value
+  shr $8, %rdi      #Shifting by 8 will give use the next character in %dil
+  add $8, %cl       #We need to increase our counter by 8 (one character seen)
   
 test:
-  cmp $1, %al
-  setne %r8b
-  cmp %cl, size
-  setge %r9b
-  and %r8b, %r9b
-  jnz loop
+  cmp $1, %al       #Have we found our character yet? (is found == 1?)
+  setne %r8b        #We save found != 1 into %r8b
+  cmp %cl, size     #Have we seen all characters (did our counter reached the size of the string(8*8)?)
+  setg %r9b         #We save (size > counter) into %r9b
+  and %r8b, %r9b    #We check both conditions to see if both hold
+  jnz loop          #If the result of the and is not 0 (both conditions hold) we execute the loop body
   
 done:
   leave
@@ -72,6 +72,6 @@ done:
 
 
 .data
-string: .ascii "Hello!!\0" #8
-char: .ascii "j"
-size: .byte 64 #8 * 8
+string: .ascii "Hello!\n\0"     #The string where to look for the character (8 bytes)
+char: .ascii "l"                #The character to look for (1 byte)
+size: .byte 64                  #The size of the string is 8 bytes, each one is 8 bits, so 8 * 8
