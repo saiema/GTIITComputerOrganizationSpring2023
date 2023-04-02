@@ -6,31 +6,32 @@
 main:
   push %rbp
   mov %rsp, %rbp
-  push $8   #offset (skip the first one)
-  push %rdi #arguments' size
-  decq -16(%rbp)
-  push %rsi
+  push %rdi       # current index     (-8 %rbp)
+  decq -8(%rbp)   # update index to (argc - 1)
+  push %rdi       # arguments' size   (-16 %rbp)
+  push %rsi       # array's address   (-24 %rbp)
+  subq $8, %rsp   # align stack so rsp is a multiple of 16
   jmp moreArguments
 
 printArguments:
-  mov -8(%rbp), %r9 #offset
-  mov $format, %rdi
-  mov -24(%rbp), %r8
-  mov (%r8, %r9), %rsi
-  xor %rax, %rax
+  mov -24(%rbp), %r8    # array's address
+  mov -8(%rbp), %r9     # index
+  leaq format(%rip), %rdi
+  mov (%r8, %r9, 8), %rsi
   call printf
-  addq $8, -8(%rbp) #increase offset by 8
-  decq -16(%rbp)
+  decq -8(%rbp)         # decrease index
 
 moreArguments:
-  cmpq $0, -16(%rbp)
+  mov -8(%rbp), %r8    # move the index into r8
+  cmpq $0, -8(%rbp)    # compare 0 - index
   jnz printArguments
 
 done:
-  add $24, %rsp
+  add $32, %rsp
   mov $0, %rax
   leave
   ret
   
 .data
 format: .asciz "%s\n"
+
