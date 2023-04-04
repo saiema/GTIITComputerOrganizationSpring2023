@@ -6,7 +6,7 @@
 .equ SYS_EXIT, 60
 	
 /*
-Call exit with an exit code stored in register rdi
+Call the exit system function with a provided exit code
 */
 _exit:
     mov $SYS_EXIT, %rax

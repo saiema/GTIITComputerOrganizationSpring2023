@@ -69,8 +69,7 @@ _print_characters:
 
 /*
 Print a null-terminate string, this subroutine expects only one argument:
-the address where the string begins, this address is expected to be in
-register rdi.
+the address where the string begins
 */
 _print_string:
   push %rbp
