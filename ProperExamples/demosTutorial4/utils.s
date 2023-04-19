@@ -25,9 +25,15 @@ The argument is expected to be in rdi register.
 _printNumberAsString:
   push %rbp
   mov %rsp, %rbp
-  mov $digitSpace, %rcx
+  leaq digitSpace(%rip), %rcx
+  cmp $0, %rsi
+  jz _printNumberAsString_final_init
+  
+_printNumberAsString_add_new_line:
   movb $NEWLINE, (%rcx)
-  push %rdi #saves rdi since the register will be modified
+  
+_printNumberAsString_final_init:  
+  push %rdi # saves rdi since the register will be modified
   push %rcx
   mov %rdi, %rax
   
@@ -40,8 +46,8 @@ _printRAXLoop:
   div %rbx
   add $48, %rdx
   
-  incq (%rsp)
-  mov (%rsp), %rcx
+  incq -16(%rbp)
+  mov -16(%rbp), %rcx
   mov %rdx, (%rcx)
   cmp $0, %rax
   jne _printRAXLoop
@@ -49,14 +55,16 @@ _printRAXLoop:
 _printRAXLoop2:
   mov $SYS_WRITE, %rax
   mov $STDOUT, %rdi
-  mov (%rsp), %rsi
+  mov -16(%rbp), %rsi
   mov $1, %rdx
   syscall
   
-  decq (%rsp)
-  mov (%rsp), %rcx
+  decq -16(%rbp)
+  mov -16(%rbp), %rcx
   
-  cmp $digitSpace, %rcx
+  leaq digitSpace(%rip), %r8
+  cmp %r8, %rcx
+  ; cmp $digitSpace, %rcx
   jge _printRAXLoop2
   # Clear the two saved local variables
   addq $16, %rsp # this is the equivalent of two pops discarding the popped value
