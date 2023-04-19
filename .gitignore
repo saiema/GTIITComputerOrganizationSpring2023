@@ -1,3 +1,6 @@
 *.o
 *.asm
 *.gdb_history
+*.a
+*.so
+*.zip
