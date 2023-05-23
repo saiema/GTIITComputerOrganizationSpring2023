@@ -38,8 +38,41 @@ main_done:
     leave
     ret
 
+equalArrays:
+    push %rbp
+    mov %rsp, %rbp
+    push %rdi # arrayA at -8(%rbp)
+    push %rsi # arrayB at -16(%rbp)
+    push %rdx # size at -24(%rbp)
+    push $0   # the index at -32(%rbp)
+    jmp equalArrays_loop_test
 
+equalArrays_loop_body:
+    mov -8(%rbp), %r8
+    mov -32(%rbp), %r9
+    mov (%r8, %r9, 4), %r10d
+    mov -16(%rbp), %r8
+    mov (%r8, %r9, 4), %r11d
+    cmp %r10d, %r11d
+    jne equalArrays_notEquals
+    incq -32(%rbp)
 
+equalArrays_loop_test:
+    mov -24(%rbp), %r8
+    cmp -32(%rbp), %r8
+    jg equalArrays_loop_body
+
+equalArrays_equals:
+    mov $1, %rax
+    jmp equalArrays_done
+
+equalArrays_notEquals:
+    mov $0, %rax
+
+equalArrays_done:
+    add $32, %rsp
+    leave
+    ret
 
 .data
 msg_equals: .asciz "Arrays are equal\n"

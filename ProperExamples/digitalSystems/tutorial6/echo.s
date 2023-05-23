@@ -7,11 +7,14 @@
 .equ STDOUT, 1
 
 main:
+    # draw stack here
     push %rbp
     mov %rsp, %rbp
+    # draw stack here
     push %rdi
     push %rsi
     push $0
+    # draw stack here
     jmp printArguments_test
 
 printArguments_loop:
@@ -19,6 +22,7 @@ printArguments_loop:
     mov -24(%rbp), %r9
     mov (%r8, %r9, 8), %rdi
     call strlength
+    # draw stack here
 
     mov %rax, %rdx
     mov $SYS_WRITE, %rax
@@ -45,15 +49,20 @@ printArguments_test:
 
 printArguments_done:
     add $24, %rsp
+    # draw stack here
     mov $0, %rax
     leave
+    # draw stack here
     ret
 
 /*A function that takes a NULL-terminated string and returns its length*/
 strlength:
+    # draw stack here
     push %rbp
     mov %rsp, %rbp
+    # draw stack here
     push %rdi
+    # draw stack here
     mov $0, %rax
     jmp strlength_loop_test
 
@@ -68,7 +77,9 @@ strlength_loop_test:
 
 strlength_done:
     add $8, %rsp
+    # draw stack here
     leave
+    # draw stack here
     ret
 
 .data

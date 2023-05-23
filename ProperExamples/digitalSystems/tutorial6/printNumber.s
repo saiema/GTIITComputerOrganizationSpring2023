@@ -9,7 +9,7 @@
 main:
     push %rbp
     mov %rsp, %rbp
-    mov $478, %rdi
+    mov $16, %rdi
     call integerToString
     leave
     ret

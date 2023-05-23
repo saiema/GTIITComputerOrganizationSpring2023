@@ -1,5 +1,9 @@
 .global main
 .type main function
+.extern print_string
+.extern print_integer
+.type print_string function
+.type print_integer function
 
 .text
 

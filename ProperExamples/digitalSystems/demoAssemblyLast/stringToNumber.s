@@ -23,6 +23,7 @@ main_transform_and_print:
     mov %rax, %rdi
     mov $1, %rsi
     call print_integer
+    mov $0, %rax
     jmp main_done
 
 main_wrong_arguments:
@@ -32,7 +33,6 @@ main_wrong_arguments:
     jmp main_done
 
 main_done:
-    mov $0, %rax
     add $16, %rsp
     leave
     ret

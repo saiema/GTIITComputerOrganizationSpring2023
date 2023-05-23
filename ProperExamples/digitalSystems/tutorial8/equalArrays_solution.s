@@ -1,10 +1,10 @@
 equalArrays:
     push %rbp
     mov %rsp, %rbp
-    push %rsi
-    push %rdi
-    push %rdx
-    push $0
+    push %rsi # 8   (first array)
+    push %rdi  # 16 (second array)
+    push %rdx  # 24 (size)
+    push $0    # 32 (index)
     cmpq $0, -24(%rbp)
     jz equalArrays_equal
     jmp equalArrays_loop_test

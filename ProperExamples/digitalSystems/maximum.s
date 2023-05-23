@@ -4,24 +4,11 @@
 .text
 
 main:
-                         #                  /------------------------\ <----- rsp
-                         #                  |       ret address      | {8 bytes}
     push %rbp
     mov %rsp, %rbp
-                         #                  /------------------------\ <----- rsp, rbp
-                         #                  |           rbp          | {8 bytes}
-                         #                  |------------------------| <----- rbp + 8
-                         #                  |       ret address      | {8 bytes}
 
     sub $8, %rsp
-                         #                  /------------------------\ <----- rsp, (rbp - 8)
-                         #                  | empty (garbage data)   | {8 bytes}
-                         #                  |------------------------| <----- rbp
-                         #                  |           rbp          | {8 bytes}
-                         #                  |------------------------| <----- rbp + 8
-                         #                  |       ret address      | {8 bytes}
-
-                         #                 
+               
     movb $4, -1(%rbp)    # -1(%rbp)        
     movb $10, -2(%rbp)   # -2(%rbp) 
     movb $8, -3(%rbp)    # -3(%rbp)
@@ -30,55 +17,15 @@ main:
     movb $9, -6(%rbp)    # -6(%rbp)
     movb $16, -7(%rbp)   # -7(%rbp)
     movb $2, -8(%rbp)    # -8(%rbp)
-                         #                  /------------------------\ <----- rsp, (rbp - 8)
-                         #                  |2, 16, 9, 5, 3, 8, 10, 4| {8 bytes}
-                         #                  |------------------------| <----- rbp
-                         #                  |           rbp          | {8 bytes}
-                         #                  |------------------------| <----- rbp + 8
-                         #                  |       ret address      | {8 bytes}
+
     
     leaq -8(%rbp), %rdi  # The array starts at the address rbp - 8, this address is pointing to
     mov $8, %rsi         # the byte that has a zero
     call maximum
-    add $24, %rsp
-                         #                  /------------------------\ 
-                         #                  |       index i (0)      | {8 bytes}
-                         #                  |------------------------| 
-                         #                  |  current maximum (-1)  | {8 bytes}
-                         #                  |------------------------| 
-                         #                  |          rsi (8)       | {8 bytes}
-                         #                  |------------------------| 
-                         #                  |          rdi           | {8 bytes}
-                         #                  |------------------------| 
-                         #                  |      rbp(from main)    | {8 bytes}
-                         #                  |------------------------| 
-                         #                  |  ret address (line 43) | {8 bytes}
-                         #                  |------------------------| 
-                         #                  |2, 16, 9, 5, 3, 8, 10, 4| {8 bytes}
-                         #                  |------------------------| <----- rsp, rbp
-                         #                  |           rbp          | {8 bytes}
-                         #                  |------------------------| 
-                         #                  |       ret address      | {8 bytes}
+    add $8, %rsp
+
     leave
-                         #                  rbp is restored (pop %rbp)
-                         #                  /------------------------\ 
-                         #                  |       index i (0)      | {8 bytes}
-                         #                  |------------------------| 
-                         #                  |  current maximum (-1)  | {8 bytes}
-                         #                  |------------------------| 
-                         #                  |          rsi (8)       | {8 bytes}
-                         #                  |------------------------| 
-                         #                  |          rdi           | {8 bytes}
-                         #                  |------------------------|
-                         #                  |      rbp(from main)    | {8 bytes}
-                         #                  |------------------------|
-                         #                  |  ret address (line 43) | {8 bytes}
-                         #                  |------------------------|
-                         #                  |2, 16, 9, 5, 3, 8, 10, 4| {8 bytes}
-                         #                  |------------------------| 
-                         #                  |           rbp          | {8 bytes}
-                         #                  |------------------------| <----- rsp
-                         #                  |       ret address      | {8 bytes}
+
     ret
 
 /*
