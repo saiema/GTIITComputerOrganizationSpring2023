@@ -1,0 +1,5 @@
+Isaac Asimov,Robots and Empire,383,45,0
+Isaac Asimov,Mirror Image,82,101,1
+Isaac Asimov,The Naked Sun,187,43,0
+Isaac Asimov,The Caves of Steel,224,42,0
+Isaac Asimov,The Robots of Dawn,419,44,1

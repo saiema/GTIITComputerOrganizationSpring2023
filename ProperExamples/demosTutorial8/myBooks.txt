@@ -1,0 +1,10 @@
+Isaac Asimov,Robots and Empire,383,45,0
+J. R. R. Tolkien,The Hobbit,310,62,0
+Isaac Asimov,Mirror Image,82,101,1
+J. R. R. Tolkien,The Lord of the Rings,9250,63,1
+Isaac Asimov,The Naked Sun,187,43,0
+J. R. R. Tolkien,The Adventures of Tom Bombadil,304,64,0
+J. R. R. Tolkien,The Silmarillion,365,65,0
+Isaac Asimov,The Caves of Steel,224,42,0
+Douglas Adams,The Hitchhiker's Guide to the Galaxy,400,72,1
+Isaac Asimov,The Robots of Dawn,419,44,1
