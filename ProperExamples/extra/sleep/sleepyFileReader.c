@@ -37,7 +37,7 @@ void main(int argc, char ** argv) {
         }
         run = evaluateInput(byteRead);
         cleanByte(fd);
-        sleep(2);
+        sleep(2); 
     }
 }
 
@@ -82,6 +82,11 @@ int evaluateInput(char input) {
             printf("Current time is: [%d %d %d %d:%d:%d]\n", timeinfo->tm_mday,
                     timeinfo->tm_mon + 1, timeinfo->tm_year + 1900,
                     timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
+            return 1;
+        }
+        case 'L':
+        case 'l': {
+            puts("The command that I respond to are:\n\t'H'|'h': Greet\n\t'E'|'e'|'X'|'x': Quit\n\t'T'|'t': Display current time and date\n\t'L'|'l': Display this list");
             return 1;
         }
         case 0: {
