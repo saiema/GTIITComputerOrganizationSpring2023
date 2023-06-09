@@ -39,10 +39,10 @@ print_integer_convert:
     mov -24(%rbp), %r9
     leaq (%r8, %r9, 1), %r10
     mov %dl, (%r10)
-    decb -24(%rbp)
 
     cmp $0, %rax
     jz print_integer_print_negative
+    decb -24(%rbp)
     mov -24(%rbp), %rax
     neg %rax
     mov $0, %rdx

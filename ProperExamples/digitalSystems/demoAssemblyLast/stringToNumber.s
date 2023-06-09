@@ -72,7 +72,7 @@ stringToNumber_loop_test:
 
 stringToNumber_done:
     mov -40(%rbp), %rax
-    sub $40, %rsp
+    add $40, %rsp
     leave
     ret
 
