@@ -33,7 +33,7 @@ Given an array of books, a size, and a string representing a particular author.
 This function will return an array of pointers to those books that belong to the requested author.
 The returned array must end with a 0 to denote it's ending
 */
-extern Book ** filterBooksByAuthor(Book * books, int size, char * author);
+//extern Book ** filterBooksByAuthor(Book * books, int size, char * author);
 
 /*
 Prints a Book into standard output
