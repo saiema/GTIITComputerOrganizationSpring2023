@@ -2,10 +2,12 @@
 .global print_string
 .global equals
 .global strlength
+.global stringToNumber
 .type print_integer function
 .type print_string function
 .type equals function
 .type strlength function
+.type stringToNumber function
 
 .text
 
@@ -13,19 +15,68 @@
 .equ STDOUT, 1
 .equ NEWLINE, 10
 
-/*Function that takes an integer number and returns it's string representation*/
+/*
+  Given a null-terminated string that represents a positive integer number,
+  this function will return the corresponding number
+*/
+stringToNumber:
+    push %rbp
+    mov %rsp, %rbp
+    push %rdi   # the string to convert at -8(%rbp)
+    push $1     # multiplier variable at -16(%rbp)
+    sub $8, %rsp # reserved space for our string's length at -24(%rbp)
+    sub $8, %rsp # reserved space for our index variable at -32(%rbp)
+    push $0      # our resulting number at -40(%rbp)
+    call strlength
+    mov %rax, -24(%rbp)
+    dec %rax
+    mov %rax, -32(%rbp) # we are starting our index with size - 1
+    jmp stringToNumber_loop_test
+
+stringToNumber_loop_body:
+    mov -8(%rbp), %r8
+    mov -32(%rbp), %r9
+    movzbq (%r8, %r9, 1), %rcx  # string[index]
+    sub $48, %rcx               # we substract 48 from our digit to get the actual number
+    mov -16(%rbp), %r10         # our multiplier
+    mov -40(%rbp), %r11         # our current number
+    imul %r10, %rcx             # current digit*multiplier
+    add %rcx, %r11              # current number + (digit*multiplier)
+    mov %r11, -40(%rbp)         # current number = current number + (digit*multiplier)
+    imul $10, %r10              # multiplier * 10
+    mov %r10, -16(%rbp)         # multiplier = multiplier * 10
+    decq -32(%rbp)              # index--
+
+stringToNumber_loop_test:
+    cmpq $0, -32(%rbp)
+    jge stringToNumber_loop_body    # we want to see all digits from index size - 1 to 0
+                                    # so the condition is (index >= 0)
+
+stringToNumber_done:
+    mov -40(%rbp), %rax
+    sub $40, %rsp
+    leave
+    ret
+
+/* 
+  Function that takes an integer number and prints it's string representation
+  The first argument is the number to print,
+  the second argument is whether to print a newline or not.
+*/
 print_integer:
     push %rbp
     mov %rsp, %rbp
     push %rdi       # number -8(%rbp)
-    push $0         # isNegative -16(%rbp)
-    push $-1        # counter -24(%rbp)
-    push $1         # segments -32(%rbp)
+    push %rsi       # print a newline or not -16(%rbp)
+    push $0         # isNegative -24(%rbp)
+    push $-1        # counter -32(%rbp)
+    push $1         # segments -40(%rbp)
     sub $8, %rsp    # first 8 bits to save the string
+    movq $0, (%rsp)
     cmp $0, %rdi
     jge print_integer_convert
     negq -8(%rbp)
-    movq $1, -16(%rbp)
+    movq $1, -24(%rbp)
 
 print_integer_convert:
     mov -8(%rbp), %rax
@@ -35,40 +86,41 @@ print_integer_convert:
     add $48, %rdx
     mov %rax, -8(%rbp)
 
-    leaq -32(%rbp), %r8
-    mov -24(%rbp), %r9
+    leaq -40(%rbp), %r8
+    mov -32(%rbp), %r9
     leaq (%r8, %r9, 1), %r10
     mov %dl, (%r10)
+    decb -32(%rbp)
 
     cmp $0, %rax
     jz print_integer_print_negative
-    decb -24(%rbp)
-    mov -24(%rbp), %rax
+    mov -32(%rbp), %rax
     neg %rax
     mov $0, %rdx
     mov $8, %rbx
     div %rbx
 
     inc %rax
-    mov -32(%rbp), %r8
+    mov -40(%rbp), %r8
     cmp %r8, %rax
     jle print_integer_convert
     sub $8, %rsp
-    incq -32(%rbp)
+    movq $0, (%rsp)
+    incq -40(%rbp)
     jmp print_integer_convert
 
 print_integer_print_negative:
-    cmpq $0, -16(%rbp)
+    cmpq $0, -24(%rbp)
     jz print_integer_print_number
     mov $SYS_WRITE, %rax
     mov $STDOUT, %rdi
-    leaq negativeSymbol(%rip), %rsi
+    mov $negativeSymbol, %rsi
     mov $1, %rdx
     syscall
 
 print_integer_print_number:
-    leaq -32(%rbp), %r8
-    mov -24(%rbp), %r9
+    leaq -40(%rbp), %r8
+    mov -32(%rbp), %r9
     leaq (%r8, %r9, 1), %r10
     neg %r9
     mov $SYS_WRITE, %rax
@@ -76,18 +128,20 @@ print_integer_print_number:
     mov %r10, %rsi
     mov %r9, %rdx
     syscall
+    cmpq $0, -16(%rbp)
+    je print_integer_print_exit
 
 print_integer_print_newLine:
     mov $SYS_WRITE, %rax
     mov $STDOUT, %rdi
-    leaq newLineSymbol(%rip), %rsi
+    mov $newLineSymbol, %rsi
     mov $1, %rdx
     syscall
 
 print_integer_print_exit:
-    mov -32(%rbp), %r8
+    mov -40(%rbp), %r8
     leaq (%rsp, %r8, 8), %rsp
-    add $32, %rsp
+    add $40, %rsp
     mov $0, %rax
     leave
     ret
@@ -158,20 +212,22 @@ strlength:
   push %rbp
   mov %rsp, %rbp
   push %rdi       # string at -8(%rbp)
-  mov $0, %rax
+  push $0         # -16(%rbp)
   jmp strlength_loop_test
 
 strlength_loop_body:
-  inc %rax
+  incq -16(%rbp)
 
 strlength_loop_test:
   mov -8(%rbp), %r8
-  mov (%r8, %rax), %cl
+  mov -16(%rbp), %r9
+  mov (%r8, %r9), %cl
   cmp $0, %cl
   jnz strlength_loop_body
 
 strlength_return:
-  sub $8, %rsp
+  mov -16(%rbp), %rax
+  sub $16, %rsp
   leave
   ret
 
